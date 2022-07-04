@@ -1,3 +1,5 @@
+from urllib import request
+from wsgiref.util import request_uri
 from django.shortcuts import render, redirect
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
@@ -102,7 +104,7 @@ class TaskCreate(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.instance.list = self.model.list
+        form.instance.list = self.request.list
         return super(TaskCreate, self).form_valid(form)
 
 
