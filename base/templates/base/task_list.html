@@ -3,7 +3,6 @@
 {% block content%}
 
 <div class="header-bar">
-    <a href="{% url 'lists' %}">&#8592; Back</a>
     <div>
         <h1>{{request.user|title}} Tasks</h1>
         <h3 style="margin:0">You have <i>{{count}}</i> incomplete task{{count|pluralize}}</h3>
@@ -23,7 +22,7 @@
         <input class="button" type="submit" value="Search" >
     </form>
     
-    <a id="add-link" href = "{% url 'task-create' 'test' %}">&#x2b;</a>
+    <a id="add-link" href = "{% url 'task-create' %}">&#x2b;</a>
 </div>
 
 
