@@ -27,7 +27,7 @@
 <div class="task-items-wrapper">
     {% for list in lists %}
         <div class="list-wrapper">
-            <a href="{% url 'tasks' list.title %}">{{list}}</a>
+            <a href="{% url 'tasks' list.id %}">{{list}}</a>
         </div>
     {% empty %}
         <h3>No lists</h3>
