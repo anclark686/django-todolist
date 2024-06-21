@@ -95,7 +95,7 @@ class TaskList(LoginRequiredMixin, ListView):
             context['tasks'] = context['tasks'].filter(title__contains=search_input)
 
         context['search_input'] = search_input
-        context['list'] = list_id
+        context['list'] = self.kwargs['list']
 
         return context
 
