@@ -118,7 +118,7 @@ label {
 
 .card-body {
     padding: 20px;
-    color: #fff;
+    background-color: #fff;
 }
 
 .logout-btn {
