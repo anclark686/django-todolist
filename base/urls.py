@@ -9,9 +9,9 @@ urlpatterns = [
 
     path('', ToDoListList.as_view(), name="lists"),
     path('todolist-create', TodoListCreate.as_view(), name="todolist-create"),
-    path('tasks/<list>', TaskList.as_view(), name="tasks"),
-    path('task/<int:pk>/', TaskDetail.as_view(), name="task"),
-    path('tasks/<list>/create', TaskCreate.as_view(), name="task-create"),
-    path('task-update/<int:pk>/', TaskUpdate.as_view(), name="task-update"),
-    path('task-delete/<int:pk>/', TaskDelete.as_view(), name="task-delete"),
+    path('todolists/<int:list>', TaskList.as_view(), name="tasks"),
+    path('todolists/<int:list>/create', TaskCreate.as_view(), name="task-create"),
+    path('todolists/<int:list>/task/<int:pk>', TaskDetail.as_view(), name="task"),
+    path('todolists/<int:list>/task/<int:pk>/update', TaskUpdate.as_view(), name="task-update"),
+    path('todolists/<int:list>/task/<int:pk>/delete', TaskDelete.as_view(), name="task-delete"),
 ]

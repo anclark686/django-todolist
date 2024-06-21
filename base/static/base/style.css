@@ -114,3 +114,10 @@ label {
 .card-body {
     padding: 20px;
 }
+
+.logout-btn {
+    color: #fff;
+    outline: none;
+    background-color: inherit;
+    border: none;
+}

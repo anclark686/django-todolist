@@ -19,31 +19,39 @@ class CustomLoginView(LoginView):
     fields = '__all__'
     redirect_authenticated_user = True
 
+
     def get_success_url(self):
-        return reverse_lazy('tasks')
+        return reverse_lazy('lists')
 
 
 class RegisterPage(FormView):
     template_name = 'base/register.html'
     form_class = UserCreationForm
     redirect_authenticated_user = True
-    success_url = reverse_lazy('tasks')
+    success_url = reverse_lazy('lists')
+
 
     def form_valid(self, form):
         user = form.save()
+
         if user is not None:
             login(self.request, user)
+
         return super(RegisterPage, self).form_valid(form)
 
+
     def get(self, *args, **kwargs):
+
         if self.request.user.is_authenticated:
             return redirect('tasks')
+        
         return super(RegisterPage, self).get(*args, **kwargs)
 
 
 class ToDoListList(LoginRequiredMixin, ListView):
     model = ToDoList
     context_object_name = "lists"
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -53,7 +61,7 @@ class ToDoListList(LoginRequiredMixin, ListView):
         search_input = self.request.GET.get('search-area') or ''
 
         if search_input:
-            context['lists'] = context['lists'].filter(title__startswith=search_input)
+            context['lists'] = context['lists'].filter(title__contains=search_input)
 
         context['search_input'] = search_input
 
@@ -65,8 +73,10 @@ class TodoListCreate(LoginRequiredMixin, CreateView):
     fields = ['title']
     success_url = reverse_lazy('lists')
 
+
     def form_valid(self, form):
         form.instance.user = self.request.user
+
         return super(TodoListCreate, self).form_valid(form)
 
 
@@ -77,15 +87,18 @@ class TaskList(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['tasks'] = context['tasks'].filter(user=self.request.user)
+        list_id = self.request.path.rsplit('/')[-1]
+
+        context['tasks'] = context['tasks'].filter(user=self.request.user, list=list_id)
         context['count'] = context['tasks'].filter(complete=False).count
 
         search_input = self.request.GET.get('search-area') or ''
 
         if search_input:
-            context['tasks'] = context['tasks'].filter(title__startswith=search_input)
+            context['tasks'] = context['tasks'].filter(title__contains=search_input)
 
         context['search_input'] = search_input
+        context['list'] = list_id
 
         return context
 
@@ -99,22 +112,43 @@ class TaskDetail(LoginRequiredMixin, DetailView):
 class TaskCreate(LoginRequiredMixin, CreateView):
     model = Task
     fields = ['title', 'description', 'complete']
-    success_url = reverse_lazy('tasks', model.list)
-    
+
+
+    def get_success_url(self):
+        return reverse_lazy('tasks', kwargs={'list': self.object.list_id})
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['list_id'] = self.request.path.rsplit('/')[-2]
+        
+        return context
+
 
     def form_valid(self, form):
+        print(self.request.path.rsplit('/')[-2])
+        to_do_list = ToDoList.objects.get(id = self.request.path.rsplit('/')[-2])
         form.instance.user = self.request.user
-        form.instance.list = self.request.list
+        form.instance.list = to_do_list
+        
         return super(TaskCreate, self).form_valid(form)
 
 
 class TaskUpdate(LoginRequiredMixin, UpdateView):
     model = Task
     fields =  ['title', 'description', 'complete']
-    success_url = reverse_lazy('tasks')
+
+
+    def get_success_url(self):
+        print(self.kwargs)
+        return reverse_lazy('tasks', kwargs={'list': self.kwargs['list']})
 
 
 class TaskDelete(LoginRequiredMixin, DeleteView):
     model = Task
     context_object_name = 'task'
-    success_url = reverse_lazy('tasks')
+
+
+    def get_success_url(self):
+        print(self.kwargs)
+        return reverse_lazy('tasks', kwargs={'list': self.kwargs['list']})

@@ -3,7 +3,7 @@
 {% block content%}
 
 <div class="header-bar">
-    <a href="{% url 'tasks' 'test' %}">&#8592; Back</a>
+    <a href="{{ request.META.HTTP_REFERER }}">&#8592; Back</a>
 </div>
 
 
