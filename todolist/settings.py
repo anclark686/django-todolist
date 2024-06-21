@@ -36,7 +36,7 @@ if not IS_HEROKU_APP:
 if IS_HEROKU_APP:
     ALLOWED_HOSTS = ["reyaly-todo-225a1c591959.herokuapp.com"]
 else:
-    ALLOWED_HOSTS = [".localhost", "127.0.0.1", "[::1]", "0.0.0.0"]
+    ALLOWED_HOSTS = [".localhost", "127.0.0.1", "[::1]", "0.0.0.0", "reyaly-todo-225a1c591959.herokuapp.com"]
 
 ALLOWED_HOSTS = []
 
