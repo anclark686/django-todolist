@@ -19,6 +19,7 @@ class CustomLoginView(LoginView):
     fields = '__all__'
     redirect_authenticated_user = True
 
+
     def get_success_url(self):
         return reverse_lazy('lists')
 
@@ -29,21 +30,28 @@ class RegisterPage(FormView):
     redirect_authenticated_user = True
     success_url = reverse_lazy('lists')
 
+
     def form_valid(self, form):
         user = form.save()
+
         if user is not None:
             login(self.request, user)
+
         return super(RegisterPage, self).form_valid(form)
 
+
     def get(self, *args, **kwargs):
+
         if self.request.user.is_authenticated:
             return redirect('tasks')
+        
         return super(RegisterPage, self).get(*args, **kwargs)
 
 
 class ToDoListList(LoginRequiredMixin, ListView):
     model = ToDoList
     context_object_name = "lists"
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -53,7 +61,7 @@ class ToDoListList(LoginRequiredMixin, ListView):
         search_input = self.request.GET.get('search-area') or ''
 
         if search_input:
-            context['lists'] = context['lists'].filter(title__icontains=search_input)
+            context['lists'] = context['lists'].filter(title__contains=search_input)
 
         context['search_input'] = search_input
 
@@ -65,8 +73,10 @@ class TodoListCreate(LoginRequiredMixin, CreateView):
     fields = ['title']
     success_url = reverse_lazy('lists')
 
+
     def form_valid(self, form):
         form.instance.user = self.request.user
+
         return super(TodoListCreate, self).form_valid(form)
 
 
@@ -76,16 +86,16 @@ class TaskList(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['tasks'] = context['tasks'].filter(list=self.kwargs['list'])
-        context['tasks'] = context['tasks'].filter(user=self.request.user)
+        context['tasks'] = context['tasks'].filter(user=self.request.user, list=self.kwargs['list'])
         context['count'] = context['tasks'].filter(complete=False).count
 
         search_input = self.request.GET.get('search-area') or ''
 
         if search_input:
-            context['tasks'] = context['tasks'].filter(title__icontains=search_input)
+            context['tasks'] = context['tasks'].filter(title__contains=search_input)
 
         context['search_input'] = search_input
+        context['list'] = list_id
 
         return context
 
@@ -105,7 +115,6 @@ class TaskCreate(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        print(self.kwargs['list'])
         form.instance.list = ToDoList.objects.get(id=self.kwargs['list'])
 
         return super(TaskCreate, self).form_valid(form)
@@ -123,5 +132,7 @@ class TaskDelete(LoginRequiredMixin, DeleteView):
     model = Task
     context_object_name = 'task'
 
+
     def get_success_url(self):
+        print(self.kwargs)
         return reverse_lazy('tasks', kwargs={'list': self.kwargs['list']})
